@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { User, Mail, BookOpen, Calendar, Award, ArrowLeft, Loader2, Star } from 'lucide-react';
+import { User, Mail, BookOpen, Calendar, Award, ArrowLeft, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const API_BASE = 'http://localhost:3001';

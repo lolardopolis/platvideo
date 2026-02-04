@@ -49,7 +49,7 @@ export const coursesApi = {
 
   my: (token: string) => apiRequest<any[]>('/courses/my', { token }),
 
-  uploadIntro: (courseId: string, file: File, token: string) => {
+  uploadIntro: (_courseId: string, file: File, token: string) => {
     const formData = new FormData();
     formData.append('video', file);
     return fetch('http://localhost:3001/api/courses/upload-intro', {
@@ -94,7 +94,7 @@ export const videosApi = {
   updateProgress: (id: string, data: { watchedSeconds?: number; completed?: boolean }, token: string) =>
     apiRequest<any>(`/videos/${id}/progress`, { method: 'POST', body: data, token }),
   
-  addComment: (id: string, data: { text: string; timestamp?: number }, token: string) =>
+  addComment: (id: string, data: { text: string; timestamp?: number; attachmentUrl?: string; parentId?: string; visibility?: string }, token: string) =>
     apiRequest<any>(`/videos/${id}/comments`, { method: 'POST', body: data, token }),
   
   deleteComment: (videoId: string, commentId: string, token: string) =>

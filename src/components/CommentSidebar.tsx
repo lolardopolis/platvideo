@@ -337,7 +337,7 @@ export function CommentSidebar({ currentTime, onTimeClick, quiz, initialTab = 'c
                             <div key={reply.id} className="text-sm">
                               <div className="flex items-center gap-2">
                                 <span className="font-medium text-slate-700">{reply.user.name}</span>
-                                {reply.visibility === "PRIVATE" && <Lock size={10} className="text-yellow-500" title="Respuesta privada" />}
+                                {reply.visibility === "PRIVATE" && <Lock size={10} className="text-yellow-500" />}
                                 <span className="text-xs text-slate-600">{formatDate(reply.createdAt)}</span>
                               </div>
                               <p className="text-slate-600">{reply.text}</p>

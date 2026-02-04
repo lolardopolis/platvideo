@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, Calendar, Users, Eye, ChevronDown, Loader2, Upload, Image, X, Video, PlayCircle } from 'lucide-react';
+import { ArrowLeft, Save, Calendar, Eye, ChevronDown, Loader2, Upload, Image, X, Video, PlayCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { coursesApi } from '../services/api';
 
@@ -128,7 +128,7 @@ export function CreateCoursePage() {
     }
   };
 
-  if (role !== 'tutor' && role !== 'admin') {
+  if ((role as string) !== 'tutor' && (role as string) !== 'admin') {
     return <div className="text-center py-20"><p className="text-slate-600">Solo los tutores pueden crear cursos.</p></div>;
   }
 

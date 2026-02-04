@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, PlayCircle, CheckCircle, Lock, BookOpen, FileText, Link as LinkIcon, Code, Award, Trophy, Medal, User, Loader2, Edit, Video, Star, Heart, Eye } from 'lucide-react';
+import { ArrowLeft, PlayCircle, CheckCircle, Lock, BookOpen, FileText,Award, Trophy, Medal, User, Loader2, Edit, Video,Heart, Eye } from 'lucide-react';
 import { CourseReviews } from '../components/CourseReviews';
 import { useAuth } from '../context/AuthContext';
 import { coursesApi } from '../services/api';
@@ -40,7 +40,7 @@ interface LeaderboardEntry {
 export function CourseDetailsPage() {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const { enrolledCourses, completedVideos, toggleVideoComplete, enroll, token, user } = useAuth();
+  const { enrolledCourses, completedVideos, enroll, token, user } = useAuth();
   
   const [course, setCourse] = useState<Course | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -291,7 +291,7 @@ export function CourseDetailsPage() {
             </div>
 
                 {/* Reviews Section */}
-                <CourseReviews courseId={courseId!} isEnrolled={isEnrolled} />
+                <CourseReviews courseId={courseId!} isEnrolled={!!isEnrolled} />
 
             {/* Sidebar / Leaderboard */}
             <div className="space-y-6">

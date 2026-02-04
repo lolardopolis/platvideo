@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   ArrowLeft, Plus, Upload, Loader2, Video, FileText, Trash2, 
   GripVertical, ChevronRight, ChevronDown, MoreVertical, Eye,
-  Clock, File, X, CheckCircle, Play, FolderPlus
+  Clock, File, X, Play, FolderPlus
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { coursesApi } from '../services/api';
@@ -45,14 +45,14 @@ interface Course {
 export function CourseContentPage() {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const { token, user } = useAuth();
+  const { token } = useAuth();
   const videoInputRef = useRef<HTMLInputElement>(null);
   const resourceInputRef = useRef<HTMLInputElement>(null);
   
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
-  const [selectedModule, setSelectedModule] = useState<string | null>(null);
+  const [, setSelectedModule] = useState<string | null>(null);
   
   // Upload states
   const [uploading, setUploading] = useState(false);

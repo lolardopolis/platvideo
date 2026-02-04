@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, PlayCircle, Loader2, Users, Plus, Edit, Eye, Heart } from 'lucide-react';
+import { Search, Loader2, Users, Plus, Edit, Eye, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { coursesApi } from '../services/api';
 

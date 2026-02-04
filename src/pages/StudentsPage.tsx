@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Search, Mail, BookOpen, Loader2, User, Download, ChevronDown, Check, ArrowUpDown, FileSpreadsheet } from 'lucide-react';
+import { Search, Mail, Loader2, User, Download, ChevronDown, Check, ArrowUpDown, FileSpreadsheet } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usersApi, coursesApi } from '../services/api';
 
@@ -42,7 +41,6 @@ function StudentAvatar({ avatar, name, size = 'md' }: { avatar: string; name: st
 
 export function StudentsPage() {
   const { token, role, user } = useAuth();
-  const navigate = useNavigate();
   const [students, setStudents] = useState<StudentWithProgress[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);

@@ -4,7 +4,7 @@ import { ArrowLeft, Save, Calendar, Eye, ChevronDown, Loader2, Upload, Image, X,
 import { useAuth } from '../context/AuthContext';
 import { coursesApi } from '../services/api';
 
-const API_BASE = 'http://localhost:3001';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace('/api', '');
 
 export function CreateCoursePage() {
   const { token, role } = useAuth();

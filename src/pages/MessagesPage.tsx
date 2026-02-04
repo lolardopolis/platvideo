@@ -58,14 +58,32 @@ export function MessagesPage() {
   const [showNewChat, setShowNewChat] = useState(false);
   const [users, setUsers] = useState<Participant[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const activeConversation = conversations.find(c => c.id === activeChatId);
+
+  const formatTime = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return 'Ahora';
+    if (diffMins < 60) return `Hace ${diffMins}m`;
+    if (diffMins < 1440) return `Hace ${Math.floor(diffMins / 60)}h`;
+    return date.toLocaleDateString('es-CL', { day: 'numeric', month: 'short' });
+  };
 
   // Load conversations
   useEffect(() => {
     async function loadConversations() {
       if (!token) return;
       try {
+        setError(null);
+        console.log('Loading conversations from:', API_BASE);
         const data = await messagesApi.getConversations(token);
         setConversations(data.map((c: any) => ({
           id: c.id,
@@ -79,8 +97,9 @@ export function MessagesPage() {
         if (!activeChatId && data.length > 0) {
           setActiveChatId(data[0].id);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to load conversations:', err);
+        setError(err.message || 'Error al cargar mensajes');
       } finally {
         setLoading(false);
       }
@@ -130,18 +149,6 @@ export function MessagesPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    
-    if (diffMins < 1) return 'Ahora';
-    if (diffMins < 60) return `Hace ${diffMins}m`;
-    if (diffMins < 1440) return `Hace ${Math.floor(diffMins / 60)}h`;
-    return date.toLocaleDateString('es-CL', { day: 'numeric', month: 'short' });
-  };
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !activeChatId || !token) return;
@@ -246,7 +253,17 @@ export function MessagesPage() {
           <div className="flex-1 overflow-y-auto">
             {conversations.length === 0 ? (
               <div className="p-8 text-center text-slate-600 text-sm">
-                No tienes conversaciones aún. Haz clic en + para iniciar una.
+                {error ? (
+                    <div className="text-red-500 bg-red-50 p-4 rounded-lg">
+                      <p className="font-bold">Error de conexión:</p>
+                      <p>{error}</p>
+                      <button onClick={() => window.location.reload()} className="mt-2 text-blue-600 underline">
+                        Reintentar
+                      </button>
+                    </div>
+                ) : (
+                    "No tienes conversaciones aún. Haz clic en + para iniciar una."
+                )}
               </div>
             ) : (
               conversations.map(conv => (

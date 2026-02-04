@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Send, Clock, StickyNote, MessageSquare, Award, Loader2, Video, Reply, Lock, Globe, Upload, X } from 'lucide-react';
+import { Send, Clock, StickyNote, MessageSquare, Award, Loader2, Video, Reply, Lock, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { videosApi } from '../services/api';
 import { QuizComponent } from './QuizComponent';
@@ -19,7 +19,6 @@ interface Quiz {
 interface CommentReply {
   id: string;
   text: string;
-  attachmentUrl: string | null;
   visibility: string;
   createdAt: string;
   user: { id: string; name: string; avatar: string };

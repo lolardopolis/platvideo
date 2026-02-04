@@ -1,0 +1,463 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USERS & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String
+  avatar        String?
+  role          String    @default("STUDENT")
+  createdAt     DateTime  @default(now())
+  
+  // Email verification
+  emailVerified      Boolean   @default(false)
+  verificationToken  String?
+  resetToken         String?
+  resetTokenExpiry   DateTime?
+  
+  courses       Course[]  @relation("instructor")
+  enrollments   Enrollment[]
+  videoProgress VideoProgress[]
+  quizResults   QuizResult[]
+  sentMessages  Message[]
+  conversationParticipants ConversationParticipant[]
+  comments      Comment[]
+  notes         Note[]
+  courseStaff   CourseStaff[]
+  notifications Notification[]
+  forumPosts    ForumPost[]
+  postLikes     PostLike[]
+  forumReplies  ForumReply[]
+  reviews       Review[]
+  sessions      UserSession[]
+  bookmarks     VideoBookmark[]
+  videoLikes    VideoLike[]
+  courseLikes   CourseLike[]
+}
+
+// ============================================
+// COURSES & CONTENT
+// ============================================
+
+model Course {
+  id             String        @id @default(cuid())
+  title          String
+  description    String
+  thumbnail      String?
+  category       String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  instructorId   String
+  instructor     User          @relation("instructor", fields: [instructorId], references: [id])
+  
+  // Scheduling
+  status         String        @default("DRAFT")
+  visibility     String        @default("PRIVATE")
+  startDate      DateTime?
+  endDate        DateTime?
+  maxEnrollments Int?
+  
+  // Enrollment mode
+  enrollmentMode String        @default("OPEN") // OPEN, APPLICATION
+  
+  // Intro video
+  introVideo     String?
+  
+  // Soft delete
+  deletedAt      DateTime?
+  
+  modules        Module[]
+  enrollments    Enrollment[]
+  staff          CourseStaff[]
+  forums         Forum[]
+  reviews        Review[]
+  faqs           CourseFAQ[]
+  likes          CourseLike[]
+}
+
+model CourseStaff {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  role      String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, courseId])
+}
+
+model Module {
+  id       String  @id @default(cuid())
+  title    String
+  order    Int
+  courseId String
+  course   Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  videos   Video[]
+}
+
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  duration    Int
+  videoUrl    String
+  summary     String?
+  chapters    Json?
+  thumbnail   String?
+  order       Int
+  moduleId    String
+  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  
+  resources   Resource[]
+  quiz        Quiz?
+  progress    VideoProgress[]
+  comments    Comment[]
+  notes       Note[]
+  bookmarks   VideoBookmark[]
+  likes       VideoLike[]
+}
+
+model Resource {
+  id      String  @id @default(cuid())
+  title   String
+  type    String
+  url     String
+  videoId String
+  video   Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// QUIZZES & ASSESSMENTS
+// ============================================
+
+model Quiz {
+  id        String         @id @default(cuid())
+  title     String
+  videoId   String         @unique
+  video     Video          @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  questions QuizQuestion[]
+  results   QuizResult[]
+}
+
+model QuizQuestion {
+  id           String   @id @default(cuid())
+  text         String
+  options      String
+  correctIndex Int
+  quizId       String
+  quiz         Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model QuizResult {
+  id        String   @id @default(cuid())
+  score     Float
+  answers   String
+  userId    String
+  quizId    String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  quiz      Quiz     @relation(fields: [quizId], references: [id])
+}
+
+// ============================================
+// ENROLLMENTS & PROGRESS
+// ============================================
+
+model Enrollment {
+  id         String    @id @default(cuid())
+  userId     String
+  courseId   String
+  status     String    @default("ENROLLED") // PENDING, ENROLLED, REJECTED
+  message    String?   // Application message
+  reviewedAt DateTime?
+  createdAt  DateTime  @default(now())
+  
+  user       User      @relation(fields: [userId], references: [id])
+  course     Course    @relation(fields: [courseId], references: [id])
+  
+  @@unique([userId, courseId])
+}
+
+model VideoProgress {
+  id             String   @id @default(cuid())
+  userId         String
+  videoId        String
+  watchedSeconds Int      @default(0)
+  completed      Boolean  @default(false)
+  updatedAt      DateTime @updatedAt
+  
+  user           User     @relation(fields: [userId], references: [id])
+  video          Video    @relation(fields: [videoId], references: [id])
+  
+  @@unique([userId, videoId])
+}
+
+// ============================================
+// MESSAGING
+// ============================================
+
+model Conversation {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  id             String       @id @default(cuid())
+  userId         String
+  conversationId String
+  
+  user           User         @relation(fields: [userId], references: [id])
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, conversationId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  text           String
+  senderId       String
+  conversationId String
+  createdAt      DateTime     @default(now())
+  read           Boolean      @default(false)
+  
+  sender         User         @relation(fields: [senderId], references: [id])
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// COMMENTS & NOTES
+// ============================================
+
+model Comment {
+  id        String   @id @default(cuid())
+  text      String
+  timestamp Int?
+  userId    String
+  videoId   String
+  createdAt DateTime @default(now())
+  
+  // Video attachment
+  attachmentUrl String?
+  
+  // Reply system
+  parentId  String?
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+  
+  // Visibility: PUBLIC or PRIVATE (only visible to author of parent comment)
+  visibility String @default("PUBLIC")
+  
+  isPinned   Boolean  @default(false)
+  isHidden   Boolean  @default(false)
+  deletedAt  DateTime?
+  deletedBy  String?
+  
+  user      User     @relation(fields: [userId], references: [id])
+  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+}
+
+
+model Note {
+  id        String   @id @default(cuid())
+  text      String
+  timestamp Int
+  userId    String
+  videoId   String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+// ============================================
+// FORUMS & COMMUNITY
+// ============================================
+
+model Forum {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  type        String      @default("GENERAL")
+  courseId    String?
+  career      String?
+  isPublic    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  
+  course      Course?     @relation(fields: [courseId], references: [id])
+  posts       ForumPost[]
+}
+
+model ForumPost {
+  id        String       @id @default(cuid())
+  title     String
+  content   String
+  authorId  String
+  forumId   String
+  isPinned  Boolean      @default(false)
+  views     Int          @default(0)
+  tags      String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  
+  author    User         @relation(fields: [authorId], references: [id])
+  forum     Forum        @relation(fields: [forumId], references: [id], onDelete: Cascade)
+  replies   ForumReply[]
+  likes     PostLike[]
+}
+
+model ForumReply {
+  id        String    @id @default(cuid())
+  content   String
+  authorId  String
+  postId    String
+  createdAt DateTime  @default(now())
+  
+  author    User      @relation(fields: [authorId], references: [id])
+  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model PostLike {
+  id        String    @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime  @default(now())
+  
+  user      User      @relation(fields: [userId], references: [id])
+  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, postId])
+}
+
+// ============================================
+// COURSE REVIEWS
+// ============================================
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 stars
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  userId    String
+  courseId  String
+  
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, courseId]) // One review per user per course
+}
+
+// ============================================
+// USER SESSIONS (IP Tracking)
+// ============================================
+
+model UserSession {
+  id        String   @id @default(cuid())
+  userId    String
+  ipAddress String
+  userAgent String?
+  lastUsed  DateTime @default(now())
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, ipAddress])
+}
+
+// ============================================
+// VIDEO BOOKMARKS
+// ============================================
+
+model VideoBookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  videoId   String
+  timestamp Int      // seconds
+  note      String?
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, videoId, timestamp])
+}
+
+// ============================================
+// COURSE FAQ
+// ============================================
+
+model CourseFAQ {
+  id        String   @id @default(cuid())
+  courseId  String
+  question  String
+  answer    String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// VIEWS & LIKES TRACKING
+// ============================================
+
+model VideoLike {
+  id        String   @id @default(cuid())
+  userId    String
+  videoId   String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, videoId])
+}
+
+model CourseLike {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, courseId])
+}

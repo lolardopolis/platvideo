@@ -122,13 +122,17 @@ router.post('/upload-intro', authMiddleware, (req, res) => {
 // Get all courses
 router.get('/', async (req, res) => {
   try {
-    const { status, visibility } = req.query;
+    const { status, visibility, tags } = req.query;
     const where = { deletedAt: null };
     
     // Default filtering if not logged in
     if (!req.user) {
       where.visibility = 'PUBLIC';
       where.status = 'ACTIVE';
+    }
+
+    if (tags) {
+      where.tags = { contains: tags };
     }
 
     const courses = await prisma.course.findMany({
@@ -153,18 +157,37 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get my courses (for instructors)
+// Get my courses (updated: tutors=created, students=enrolled)
 router.get('/my', authMiddleware, async (req, res) => {
   try {
-    const courses = await prisma.course.findMany({
-      where: { instructorId: req.user.userId, deletedAt: null },
-      include: {
-        instructor: { select: { id: true, name: true, avatar: true } },
-        modules: { include: { videos: true } },
-        _count: { select: { enrollments: true, likes: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+    let courses = [];
+    
+    if (req.user.role === 'TUTOR' || req.user.role === 'ADMIN') {
+      courses = await prisma.course.findMany({
+        where: { instructorId: req.user.userId, deletedAt: null },
+        include: {
+          instructor: { select: { id: true, name: true, avatar: true } },
+          modules: { include: { videos: true } },
+          _count: { select: { enrollments: true, likes: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+    } else {
+      const enrollments = await prisma.enrollment.findMany({
+        where: { userId: req.user.userId, status: 'ENROLLED' },
+        include: {
+          course: {
+            include: {
+              instructor: { select: { id: true, name: true, avatar: true } },
+              modules: { include: { videos: true } },
+              _count: { select: { enrollments: true, likes: true } },
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+      courses = enrollments.map(e => e.course).filter(c => !c.deletedAt);
+    }
 
     res.json(courses.map((c) => ({
       ...c,
@@ -213,7 +236,7 @@ router.post('/', authMiddleware, async (req, res) => {
       return;
     }
 
-    const { title, description, thumbnail, introVideo, category, status, visibility, startDate, endDate, maxEnrollments, enrollmentMode } = req.body;
+    const { title, description, thumbnail, introVideo, category, status, visibility, startDate, endDate, maxEnrollments, enrollmentMode, tags } = req.body;
     const course = await prisma.course.create({
       data: {
         title,
@@ -221,6 +244,7 @@ router.post('/', authMiddleware, async (req, res) => {
         thumbnail,
         introVideo,
         category,
+        tags, // New field
         status: status || 'ACTIVE',
         visibility: visibility || 'PUBLIC',
         startDate: startDate ? new Date(startDate) : null,
@@ -252,11 +276,11 @@ router.put('/:id', authMiddleware, async (req, res) => {
       return;
     }
 
-    const { title, description, thumbnail, introVideo, category, status, visibility, startDate, endDate, maxEnrollments, enrollmentMode } = req.body;
+    const { title, description, thumbnail, introVideo, category, status, visibility, startDate, endDate, maxEnrollments, enrollmentMode, tags } = req.body;
     const updated = await prisma.course.update({
       where: { id: req.params.id },
       data: {
-        title, description, thumbnail, introVideo, category, status, visibility, enrollmentMode,
+        title, description, thumbnail, introVideo, category, status, visibility, enrollmentMode, tags,
         startDate: startDate ? new Date(startDate) : null,
         endDate: endDate ? new Date(endDate) : null,
         maxEnrollments: maxEnrollments ? parseInt(maxEnrollments.toString()) : null,
@@ -305,6 +329,16 @@ router.post('/:id/enroll', authMiddleware, async (req, res) => {
 
     if (course.maxEnrollments && course._count.enrollments >= course.maxEnrollments) {
       return res.status(400).json({ error: 'Course is full' });
+    }
+
+    // Check if user is already enrolled
+    const existing = await prisma.enrollment.findUnique({
+      where: { userId_courseId: { userId: req.user.userId, courseId: req.params.id } }
+    });
+
+    if (existing) {
+       // If user was previously enrolled (or pending), we return the existing enrollment
+      return res.json(existing);
     }
 
     const enrollment = await prisma.enrollment.create({

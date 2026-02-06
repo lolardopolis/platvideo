@@ -33,8 +33,8 @@ export function CoursesPage() {
         const data = await coursesApi.list(token || undefined);
         setCourses(data);
         
-        // Load my courses if tutor
-        if (role === 'tutor' && token) {
+        // Load my courses for everyone (tutors=created, students=enrolled)
+        if (token) {
           const myData = await coursesApi.my(token);
           setMyCourses(myData);
         }
@@ -78,7 +78,7 @@ export function CoursesPage() {
   }
 
   const CourseCard = ({ course, showEdit = false }: { course: Course; showEdit?: boolean }) => {
-    const isEnrolled = enrolledCourses.includes(course.id);
+    const isEnrolled = enrolledCourses.includes(course.id) || myCourses.some(c => c.id === course.id);
     const isOwner = user?.id === course.instructor.id;
     
     return (
@@ -184,8 +184,8 @@ export function CoursesPage() {
         </div>
       </div>
 
-      {/* My Courses Section (Tutors) */}
-      {role === 'tutor' && filteredMyCourses.length > 0 && (
+      {/* My Courses Section */}
+      {token && filteredMyCourses.length > 0 && (
         <div className="space-y-4">
           <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
             📚 Mis Cursos
@@ -193,7 +193,7 @@ export function CoursesPage() {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredMyCourses.map(course => (
-              <CourseCard key={course.id} course={course} showEdit />
+              <CourseCard key={course.id} course={course} showEdit={user?.id === course.instructor.id} />
             ))}
           </div>
         </div>
@@ -201,7 +201,7 @@ export function CoursesPage() {
 
       {/* All Courses Section */}
       <div className="space-y-4">
-        {role === 'tutor' && filteredMyCourses.length > 0 && (
+        {token && filteredMyCourses.length > 0 && (
           <h3 className="text-xl font-bold text-slate-900">🌐 Todos los Cursos</h3>
         )}
         

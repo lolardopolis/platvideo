@@ -73,6 +73,7 @@ model Course {
   
   // Intro video
   introVideo     String?
+  tags           String?
   
   // Soft delete
   deletedAt      DateTime?
@@ -461,3 +462,5 @@ model CourseLike {
   
   @@unique([userId, courseId])
 }
+
+// Add tags to Course model (append manually or simpler: just sed substitute the closing brace)

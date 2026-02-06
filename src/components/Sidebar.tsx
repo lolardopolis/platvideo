@@ -2,7 +2,7 @@ import { Home, PlaySquare, BookOpen, Settings, Users, GraduationCap, MessageSqua
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const API_BASE = 'http://localhost:3001';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace('/api', '');
 
 export function Sidebar() {
   const location = useLocation();

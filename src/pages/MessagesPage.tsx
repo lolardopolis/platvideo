@@ -257,6 +257,7 @@ export function MessagesPage() {
                     <div className="text-red-500 bg-red-50 p-4 rounded-lg">
                       <p className="font-bold">Error de conexión:</p>
                       <p>{error}</p>
+                      <p className="text-xs text-slate-500 mt-1">URL: {API_BASE}</p>
                       <button onClick={() => window.location.reload()} className="mt-2 text-blue-600 underline">
                         Reintentar
                       </button>

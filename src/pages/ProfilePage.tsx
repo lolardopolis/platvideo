@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { User, Mail, BookOpen, Calendar, Award, ArrowLeft, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const API_BASE = 'http://localhost:3001';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace('/api', '');
 
 interface UserProfile {
   id: string;

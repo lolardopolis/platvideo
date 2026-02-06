@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Star, User, Loader2, Send } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const API_BASE = 'http://localhost:3001';
+import { API_BASE } from '../services/api';
 
 interface Review {
   id: string;

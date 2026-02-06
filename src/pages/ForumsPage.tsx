@@ -3,7 +3,7 @@ import { MessageSquare, Plus, Loader2, BookOpen, Pin, Eye, Heart, Send, ChevronD
 import { useAuth } from '../context/AuthContext';
 import { AvatarDisplay } from '../components/AvatarDisplay';
 
-const API_BASE = 'http://localhost:3001/api';
+import { API_BASE } from '../services/api';
 
 interface Forum {
   id: string;

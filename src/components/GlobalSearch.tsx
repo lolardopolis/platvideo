@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, X, BookOpen, PlayCircle, User, Loader2 } from 'lucide-react';
 
-const API_BASE = 'http://localhost:3001';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace('/api', '');
 
 interface SearchResult {
   courses: { id: string; title: string; thumbnail: string; category: string; type: string }[];

@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, CheckCircle, XCircle, Loader2, RefreshCw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace('/api', '');
 
 export function VerifyEmailPage() {
   const { user, token, logout } = useAuth();

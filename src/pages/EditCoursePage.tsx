@@ -4,7 +4,7 @@ import { ArrowLeft, Save, Plus, GripVertical, Upload, Loader2, Image, X, Chevron
 import { useAuth } from '../context/AuthContext';
 import { coursesApi } from '../services/api';
 
-const API_BASE = 'http://localhost:3001';
+import { API_BASE } from '../services/api';
 
 interface Resource {
   id: string;

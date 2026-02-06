@@ -23,7 +23,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: '*', credentials: true }));
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(morgan('dev'));
 app.use(express.json());

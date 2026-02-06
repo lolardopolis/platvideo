@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE = 'http://localhost:3001';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace('/api', '');
 
 export function Header() {
   const { user, role, setRole, logout } = useAuth();

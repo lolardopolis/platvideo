@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { User, Lock, Mail, Camera, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace('/api', '');
 
 export function SettingsPage() {
   const { user, token, setUser } = useAuth();

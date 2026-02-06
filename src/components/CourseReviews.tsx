@@ -39,7 +39,7 @@ export function CourseReviews({ courseId, isEnrolled }: Props) {
 
   const fetchReviews = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/reviews/course/${courseId}`);
+      const res = await fetch(`${API_BASE}/reviews/course/${courseId}`);
       const json = await res.json();
       setData(json);
     } catch (err) {
@@ -53,7 +53,7 @@ export function CourseReviews({ courseId, isEnrolled }: Props) {
     if (!token || rating < 1) return;
     setSubmitting(true);
     try {
-      const res = await fetch(`${API_BASE}/api/reviews/course/${courseId}`, {
+      const res = await fetch(`${API_BASE}/reviews/course/${courseId}`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

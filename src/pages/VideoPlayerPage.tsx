@@ -393,9 +393,9 @@ export function VideoPlayerPage() {
                           )}
                         </div>
                         
-                                                                        <div className="relative group flex items-center h-full mr-4">
+                                                                        <div className="relative flex items-center h-full mr-4" onMouseEnter={() => setShowVolumeSlider(true)} onMouseLeave={() => setShowVolumeSlider(false)}>
                           <button 
-                            onClick={() => setShowVolumeSlider(!showVolumeSlider)} 
+                            onMouseEnter={() => setShowVolumeSlider(true)} 
                             className="text-white hover:text-slate-200 transition-colors p-1"
                           >
                             {isMuted || volume === 0 ? <VolumeX size={24} /> : <Volume2 size={24} />}

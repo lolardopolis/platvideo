@@ -224,42 +224,42 @@ export function DashboardPage() {
         <p className="text-blue-200/70">Continúa donde lo dejaste. Tienes {enrollments.length} cursos activos.</p>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-          <div className="flex items-center gap-3 bg-slate-100/40 p-3 rounded-lg border border-slate-300/50">
+          <div className="flex items-center gap-3 bg-blue-600 p-3 rounded-lg shadow-lg">
             <div className="p-2 bg-blue-500/20 text-blue-400 rounded-lg">
               <BookOpen size={20} />
             </div>
             <div>
-              <p className="text-xl font-bold text-slate-900">{enrollments.length}</p>
-              <p className="text-xs text-slate-600">Cursos en curso</p>
+              <p className="text-xl font-bold text-white">{enrollments.length}</p>
+              <p className="text-xs text-white/80">Cursos en curso</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 bg-slate-100/40 p-3 rounded-lg border border-slate-300/50">
+          <div className="flex items-center gap-3 bg-blue-600 p-3 rounded-lg shadow-lg">
             <div className="p-2 bg-green-500/20 text-green-400 rounded-lg">
               <Clock size={20} />
             </div>
             <div>
-              <p className="text-xl font-bold text-slate-900">{enrollments.reduce((acc, e) => acc + e.completedVideos, 0)}</p>
-              <p className="text-xs text-slate-600">Videos vistos</p>
+              <p className="text-xl font-bold text-white">{enrollments.reduce((acc, e) => acc + e.completedVideos, 0)}</p>
+              <p className="text-xs text-white/80">Videos vistos</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 bg-slate-100/40 p-3 rounded-lg border border-slate-300/50">
+          <div className="flex items-center gap-3 bg-blue-600 p-3 rounded-lg shadow-lg">
             <div className="p-2 bg-purple-500/20 text-purple-400 rounded-lg">
               <Award size={20} />
             </div>
             <div>
-              <p className="text-xl font-bold text-slate-900">{enrollments.filter(e => e.progress === 100).length}</p>
-              <p className="text-xs text-slate-600">Completados</p>
+              <p className="text-xl font-bold text-white">{enrollments.filter(e => e.progress === 100).length}</p>
+              <p className="text-xs text-white/80">Completados</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 bg-slate-100/40 p-3 rounded-lg border border-slate-300/50">
+          <div className="flex items-center gap-3 bg-blue-600 p-3 rounded-lg shadow-lg">
             <div className="p-2 bg-orange-500/20 text-orange-400 rounded-lg">
               <TrendingUp size={20} />
             </div>
             <div>
-              <p className="text-xl font-bold text-slate-900">
+              <p className="text-xl font-bold text-white">
                 {enrollments.length > 0 ? Math.round(enrollments.reduce((acc, e) => acc + e.progress, 0) / enrollments.length) : 0}%
               </p>
-              <p className="text-xs text-slate-600">Promedio</p>
+              <p className="text-xs text-white/80">Promedio</p>
             </div>
           </div>
         </div>
@@ -268,7 +268,7 @@ export function DashboardPage() {
       {/* My Learning Section */}
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-slate-900">Mi Aprendizaje</h3>
+          <h3 className="text-xl font-bold text-white">Mi Aprendizaje</h3>
           <Link to="/courses" className="text-sm text-blue-400 hover:text-blue-300 font-medium">Ver catálogo</Link>
         </div>
         

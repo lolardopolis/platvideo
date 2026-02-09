@@ -225,7 +225,7 @@ export function DashboardPage() {
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
           <div className="flex items-center gap-3 bg-blue-600 p-3 rounded-lg shadow-lg">
-            <div className="p-2 bg-white/20 text-white rounded-lg">
+            <div className="p-2 text-white rounded-lg">
               <BookOpen size={20} />
             </div>
             <div>
@@ -234,7 +234,7 @@ export function DashboardPage() {
             </div>
           </div>
           <div className="flex items-center gap-3 bg-blue-600 p-3 rounded-lg shadow-lg">
-            <div className="p-2 bg-white/20 text-white rounded-lg">
+            <div className="p-2 text-white rounded-lg">
               <Clock size={20} />
             </div>
             <div>
@@ -243,7 +243,7 @@ export function DashboardPage() {
             </div>
           </div>
           <div className="flex items-center gap-3 bg-blue-600 p-3 rounded-lg shadow-lg">
-            <div className="p-2 bg-white/20 text-white rounded-lg">
+            <div className="p-2 text-white rounded-lg">
               <Award size={20} />
             </div>
             <div>
@@ -252,7 +252,7 @@ export function DashboardPage() {
             </div>
           </div>
           <div className="flex items-center gap-3 bg-blue-600 p-3 rounded-lg shadow-lg">
-            <div className="p-2 bg-white/20 text-white rounded-lg">
+            <div className="p-2 text-white rounded-lg">
               <TrendingUp size={20} />
             </div>
             <div>
